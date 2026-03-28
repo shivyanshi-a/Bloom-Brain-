@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Plant AI Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+margin:0;
+font-family:Segoe UI, sans-serif;
+background:linear-gradient(135deg,#141e30,#243b55);
+color:white;
+}
+
+h1{
+text-align:center;
+margin-top:20px;
+}
+
+.container{
+display:flex;
+justify-content:center;
+gap:30px;
+padding:20px;
+flex-wrap:wrap;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(12px);
+padding:20px;
+border-radius:15px;
+width:380px;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+input{
+padding:10px;
+border:none;
+border-radius:8px;
+}
+
+button{
+padding:12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.predict{background:#27ae60;color:white;}
+.auto{background:#2980b9;color:white;}
+
+.status{
+margin-top:15px;
+padding:12px;
+border-radius:10px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+}
+
+.healthy{background:#2ecc71;}
+.unhealthy{background:#e74c3c;}
+
+canvas{
+background:white;
+border-radius:10px;
+height:300px !important;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌱 Smart Plant AI Dashboard</h1>
+
+<div class="container">
+
+<div class="card">
+<form method="POST">
+
+<div class="grid">
+<input name="moisture" placeholder="Moisture" value="{{values.moisture}}">
+<input name="temperature" placeholder="Temperature" value="{{values.temperature}}">
+<input name="humidity" placeholder="Humidity" value="{{values.humidity}}">
+<input name="light" placeholder="Light" value="{{values.light}}">
+<input name="ph" placeholder="pH" value="{{values.ph}}">
+<input name="air" placeholder="Air" value="{{values.air}}">
+<input name="nutrient" placeholder="Nutrient" value="{{values.nutrient}}">
+</div>
+
+<br>
+
+<button class="predict" type="submit">Predict</button>
+<button class="auto" type="submit" name="auto">Auto Sensor</button>
+
+</form>
+
+{% if prediction %}
+<div class="status {% if 'healthy' in prediction.lower() %}healthy{% else %}unhealthy{% endif %}">
+🌿 {{ prediction }}
+</div>
+{% endif %}
+
+</div>
+
+<div class="card">
+<canvas id="chart"></canvas>
+</div>
+
+</div>
+
+<script>
+const dataValues = [
+{{ values.moisture if values and values.moisture else 0 }},
+{{ values.temperature if values and values.temperature else 0 }},
+{{ values.humidity if values and values.humidity else 0 }},
+{{ values.light if values and values.light else 0 }},
+{{ values.ph if values and values.ph else 0 }},
+{{ values.air if values and values.air else 0 }},
+{{ values.nutrient if values and values.nutrient else 0 }}
+];
+
+const ctx = document.getElementById('chart').getContext('2d');
+
+new Chart(ctx, {
+type: 'bar',
+data: {
+labels: ['Moisture','Temp','Humidity','Light','pH','Air','Nutrient'],
+datasets: [{
+label: 'Sensor Values',
+data: dataValues
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+scales:{
+y:{
+beginAtZero:true
+}
+}
+}
+});
+</script>
+
+</body>
+</html>
